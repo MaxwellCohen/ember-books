@@ -1,15 +1,21 @@
 import { defineConfig } from 'vite';
-import { extensions, classicEmberSupport, ember } from '@embroider/vite';
+import { extensions, ember } from '@embroider/vite';
 import { babel } from '@rollup/plugin-babel';
+import tailwindcss from '@tailwindcss/vite';
+import { emberSsr } from 'vite-ember-ssr/vite-plugin';
 
 export default defineConfig({
+  appType: 'custom',
+  server: {
+    port: 4200,
+  },
   plugins: [
-    classicEmberSupport(),
+    tailwindcss(),
     ember(),
-    // extra plugins here
     babel({
       babelHelpers: 'runtime',
       extensions,
     }),
+    emberSsr(),
   ],
 });

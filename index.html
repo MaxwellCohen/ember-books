@@ -2,28 +2,33 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>EmberBooks</title>
-    <meta name="description" content="">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    {{content-for "head"}}
-
-    <link integrity="" rel="stylesheet" href="/@embroider/virtual/vendor.css">
-    <link integrity="" rel="stylesheet" href="/@embroider/virtual/app.css">
-
-    {{content-for "head-footer"}}
-  </head>
-  <body>
-    {{content-for "body"}}
-
-    <script src="/@embroider/virtual/vendor.js"></script>
-    <script type="module">
-      import Application from './app/app';
-      import environment from './app/config/environment';
-
-      Application.create(environment.APP);
+    <meta name="description" content="Browse two million Goodreads books with Ember. Streaming search and URL-driven filters.">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#121212" media="(prefers-color-scheme: dark)">
+    <link rel="icon" href="/logo.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400&display=swap"
+      rel="stylesheet"
+    >
+    <!-- VITE_EMBER_SSR_HEAD -->
+    <link integrity="" rel="stylesheet" href="/app/styles/app.css">
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          var d =
+            t === 'dark' ||
+            ((t === 'system' || !t) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', d);
+        } catch (e) {}
+      })();
     </script>
-
-    {{content-for "body-footer"}}
+  </head>
+  <body class="bg-surface text-black antialiased dark:bg-surface-dark dark:text-white">
+    <!-- VITE_EMBER_SSR_BODY -->
+    <script type="module" src="/app/entry.js"></script>
   </body>
 </html>

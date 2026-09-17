@@ -71,7 +71,7 @@ export default defineConfig([
    */
   {
     ...n.configs['flat/recommended-script'],
-    files: ['**/*.cjs', 'config/**/*.js'],
+    files: ['**/*.cjs'],
     plugins: {
       n,
     },
@@ -89,7 +89,14 @@ export default defineConfig([
    */
   {
     ...n.configs['flat/recommended-module'],
-    files: ['**/*.mjs'],
+    files: [
+      '**/*.mjs',
+      'server/**/*.js',
+      'server.js',
+      'api/**/*.js',
+      'workers/**/*.mjs',
+      'config/**/*.js',
+    ],
     plugins: {
       n,
     },

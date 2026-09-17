@@ -1,4 +1,3 @@
-import '@warp-drive/ember/install';
 import Application from 'ember-books/app';
 import config from 'ember-books/config/environment';
 import * as QUnit from 'qunit';
@@ -7,7 +6,7 @@ import { setup } from 'qunit-dom';
 import { start as qunitStart, setupEmberOnerrorValidation } from 'ember-qunit';
 
 export function start() {
-  setApplication(Application.create(config.APP));
+  setApplication(Application.create({ ...config.APP, autoboot: false }));
 
   setup(QUnit.assert);
   setupEmberOnerrorValidation();

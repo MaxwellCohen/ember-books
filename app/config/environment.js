@@ -1,27 +1,22 @@
-import loadConfigFromMeta from '@embroider/config-meta-loader';
-import { assert } from '@ember/debug';
+const environment = import.meta.env.MODE ?? 'development';
 
-const config = loadConfigFromMeta('ember-books');
+const ENV = {
+  modulePrefix: 'ember-books',
+  environment,
+  rootURL: '/',
+  locationType: environment === 'test' ? 'none' : 'history',
+  EmberENV: {
+    EXTEND_PROTOTYPES: false,
+    FEATURES: {},
+  },
+  APP: {},
+};
 
-assert(
-  'config is not an object',
-  typeof config === 'object' && config !== null,
-);
-assert(
-  'modulePrefix was not detected on your config',
-  'modulePrefix' in config && typeof config.modulePrefix === 'string',
-);
-assert(
-  'locationType was not detected on your config',
-  'locationType' in config && typeof config.locationType === 'string',
-);
-assert(
-  'rootURL was not detected on your config',
-  'rootURL' in config && typeof config.rootURL === 'string',
-);
-assert(
-  'APP was not detected on your config',
-  'APP' in config && typeof config.APP === 'object',
-);
+if (environment === 'test') {
+  ENV.APP.LOG_ACTIVE_GENERATION = false;
+  ENV.APP.LOG_VIEW_LOOKUPS = false;
+  ENV.APP.rootElement = '#ember-testing';
+  ENV.APP.autoboot = false;
+}
 
-export default config;
+export default ENV;

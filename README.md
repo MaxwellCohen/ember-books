@@ -1,54 +1,63 @@
-# ember-books
+<div align="center">
 
-This README outlines the details of collaborating on this Ember application.
-A short introduction of this app could easily go here.
+<img src="public/logo.svg" alt="Ember Books" width="72" height="72" />
 
-## Prerequisites
+# Ember Books
 
-You will need the following things properly installed on your computer.
+Ember Books is the Ember port of the shared Goodreads catalog app. It uses [Ember 7](https://emberjs.com/) with Vite SSR, URL-driven search and filters, and the same preview shelf as the other books apps when no database is connected.
 
-- [Git](https://git-scm.com/)
-- [Node.js](https://nodejs.org/) (with npm)
-- [Google Chrome](https://google.com/chrome/)
+</div>
 
-## Installation
+---
 
-- `git clone <repository-url>` this repository
-- `cd ember-books`
-- `npm install`
+Rebuild of [vercel-labs/book-inventory](https://github.com/vercel-labs/book-inventory), now archived. [Full dataset here](https://mengtingwan.github.io/data/goodreads.html).
 
-## Running / Development
+## Run locally
 
-- `npm run start`
-- Visit your app at [http://localhost:4200](http://localhost:4200).
-- Visit your tests at [http://localhost:4200/tests](http://localhost:4200/tests).
+```bash
+npm install
+cp .env.sample .env
+# Set POSTGRES_URL to use the shared Neon catalog, or leave it blank for the preview shelf.
+npm start
+```
 
-### Code Generators
+<div align="center">
 
-Make use of the many generators for code, try `npm exec ember help generate` for more details
+<img src="public/logo.svg" alt="Ember Books" width="72" height="72" />
 
-### Running Tests
+# Ember Books
 
-- `npm run test`
+Ember Books is the Ember port of the shared Goodreads catalog app. It uses [Ember 7](https://emberjs.com/) with Vite SSR, URL-driven search and filters, and the same preview shelf as the other books apps when no database is connected.
 
-### Linting
+</div>
 
-- `npm run lint`
-- `npm run lint:fix`
+---
 
-### Building
+Rebuild of [vercel-labs/book-inventory](https://github.com/vercel-labs/book-inventory), now archived. [Full dataset here](https://mengtingwan.github.io/data/goodreads.html).
 
-- `npm exec vite build --mode development` (development)
-- `npm run build` (production)
+## Run locally
 
-### Deploying
+```bash
+npm install
+cp .env.sample .env
+# Set POSTGRES_URL to use the shared Neon catalog, or leave it blank for the preview shelf.
+npm start
+```
 
-Specify what it takes to deploy your app.
+Visit [http://localhost:4200](http://localhost:4200). Without a database the app serves a small preview catalog so search, filters, pagination, and book pages still work.
 
-## Further Reading / Useful Links
+```bash
+npm run lint
+npm test
+```
 
-- [ember.js](https://emberjs.com/)
-- [Vite](https://vite.dev)
-- Development Browser Extensions
-  - [ember inspector for chrome](https://chrome.google.com/webstore/detail/ember-inspector/bmdblncegkenkacieihfhpjfppoconhi)
-  - [ember inspector for firefox](https://addons.mozilla.org/en-US/firefox/addon/ember-inspector/)
+## Deploy
+
+```bash
+npm run deploy:vercel
+npm run deploy:netlify
+npm run deploy:cloudflare
+```
+
+Set `POSTGRES_URL` (and optionally `API_DELAY_MS`) on each host. Cloudflare uses `wrangler secret put POSTGRES_URL`.
+

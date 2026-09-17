@@ -2,10 +2,11 @@
   "name": "ember-books",
   "version": "0.0.0",
   "private": true,
-  "description": "Small description for ember-books goes here",
-  "repository": "",
+  "description": "Goodreads catalog app built with Ember",
+  "repository": "https://github.com/MaxwellCohen/ember-books",
   "license": "MIT",
   "author": "",
+  "type": "module",
   "exports": {
     "./tests/*": "./tests/*",
     "./*": "./app/*"
@@ -15,7 +16,7 @@
     "test": "tests"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && vite build --ssr app/app-ssr.js && node scripts/prepare-server-template.mjs",
     "format": "prettier . --cache --write",
     "lint": "concurrently \"npm:lint:*(!fix)\" --names \"lint:\" --prefixColors auto",
     "lint:css": "stylelint \"**/*.css\"",
@@ -26,8 +27,13 @@
     "lint:hbs:fix": "ember-template-lint . --fix",
     "lint:js": "eslint . --cache",
     "lint:js:fix": "eslint . --fix",
-    "start": "vite",
-    "test": "vite build --mode development && ember test --path dist"
+    "start": "node server.js --dev",
+    "preview": "node server.js",
+    "test": "vite build --mode development && ember test --path dist/client",
+    "preview:cloudflare": "npm run build && cp dist/server/template.html dist/client/index.html && npx --yes wrangler@4.131.2 dev",
+    "deploy:cloudflare": "npm run build && cp dist/server/template.html dist/client/index.html && npx --yes wrangler@4.131.2 deploy",
+    "deploy:netlify": "npm run build && cp dist/server/template.html dist/client/index.html && npx --yes netlify deploy --prod --dir dist/client --functions netlify/functions --skip-functions-cache",
+    "deploy:vercel": "npx --yes vercel deploy --prod --yes"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
@@ -65,8 +71,8 @@
     "ember-qunit": "^9.1.0",
     "ember-resolver": "^13.2.0",
     "ember-source": "~7.2.0",
+    "ember-strict-application-resolver": "^0.1.1",
     "ember-template-lint": "^7.9.3",
-    "ember-welcome-page": "^8.0.5",
     "eslint": "^9.39.5",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-ember": "^12.7.5",
@@ -84,9 +90,23 @@
     "vite": "^8.2.1"
   },
   "engines": {
-    "node": ">= 20.19.0"
+    "node": ">= 22"
   },
   "ember": {
     "edition": "octane"
+  },
+  "dependencies": {
+    "@fastify/compress": "^9.2.0",
+    "@fastify/middie": "^9.3.4",
+    "@fastify/static": "^10.1.3",
+    "@neondatabase/serverless": "^1.1.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "clsx": "^2.1.1",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
+    "fastify": "^5.12.5",
+    "tailwind-merge": "^3.7.0",
+    "tailwindcss": "^4.3.3",
+    "vite-ember-ssr": "^0.4.1"
   }
 }
