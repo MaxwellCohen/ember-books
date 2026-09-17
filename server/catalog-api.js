@@ -6,22 +6,42 @@ import {
   parseSearchParams,
 } from '../app/lib/url-state.js';
 import { getBookById, getBooksCount, getBooksPage } from './book-queries.js';
+import { HTML_CACHE_CONTROL } from './catalog-cache.js';
+
+export const PUBLIC_CACHE_CONTROL = HTML_CACHE_CONTROL;
+export const PRIVATE_CACHE_CONTROL = 'private, no-store';
 
 export function searchParamsFromUrl(url) {
   const { searchParams } = new URL(url, 'http://ember-books.local');
   return parseSearchParams(Object.fromEntries(searchParams.entries()));
 }
 
-async function applyApiDelay(searchParams) {
+export function effectiveApiDelayMs(searchParams) {
   const uiMs = getApiDelayMs(searchParams);
   const envMs = Number(process.env.API_DELAY_MS || 0);
-  const ms =
-    uiMs > 0
-      ? uiMs
-      : Number.isFinite(envMs)
-        ? Math.min(MAX_API_DELAY_MS, Math.max(0, envMs))
-        : 0;
-  await waitForApiDelay(ms);
+  if (uiMs > 0) return uiMs;
+  if (!Number.isFinite(envMs)) return 0;
+  return Math.min(MAX_API_DELAY_MS, Math.max(0, envMs));
+}
+
+export function cacheControlFor(searchParams) {
+  return effectiveApiDelayMs(searchParams) > 0
+    ? PRIVATE_CACHE_CONTROL
+    : PUBLIC_CACHE_CONTROL;
+}
+
+export function cacheHeadersFor(searchParams) {
+  const cacheControl = cacheControlFor(searchParams);
+  return {
+    'cache-control': cacheControl,
+    'cdn-cache-control': cacheControl,
+    'vercel-cdn-cache-control': cacheControl,
+    'netlify-cdn-cache-control': cacheControl,
+  };
+}
+
+async function applyApiDelay(searchParams) {
+  await waitForApiDelay(effectiveApiDelayMs(searchParams));
 }
 
 export async function catalogPayload(searchParams) {

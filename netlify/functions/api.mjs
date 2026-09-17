@@ -1,6 +1,7 @@
 import '../../server/load-env.js';
 import {
   bookPayload,
+  cacheHeadersFor,
   catalogPayload,
   searchParamsFromUrl,
 } from '../../server/catalog-api.js';
@@ -26,19 +27,24 @@ export async function handler(event) {
   const parsed = new URL(url);
 
   if (parsed.pathname === '/api/catalog') {
-    const payload = await catalogPayload(searchParamsFromUrl(url));
+    const searchParams = searchParamsFromUrl(url);
+    const payload = await catalogPayload(searchParams);
     return {
       body: JSON.stringify(payload),
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        ...cacheHeadersFor(searchParams),
+      },
       statusCode: 200,
     };
   }
 
   const bookMatch = parsed.pathname.match(/^\/api\/books\/([^/]+)$/);
   if (bookMatch) {
+    const searchParams = searchParamsFromUrl(url);
     const book = await bookPayload(
       decodeURIComponent(bookMatch[1]),
-      searchParamsFromUrl(url),
+      searchParams,
     );
     if (!book) {
       return {
@@ -49,7 +55,10 @@ export async function handler(event) {
     }
     return {
       body: JSON.stringify(book),
-      headers: { 'content-type': 'application/json' },
+      headers: {
+        'content-type': 'application/json',
+        ...cacheHeadersFor(searchParams),
+      },
       statusCode: 200,
     };
   }

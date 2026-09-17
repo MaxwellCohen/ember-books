@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { assembleHTML, createEmberApp } from 'vite-ember-ssr/server';
 import {
   bookPayload,
+  cacheControlFor,
   catalogPayload,
   searchParamsFromUrl,
 } from './server/catalog-api.js';
@@ -32,23 +33,31 @@ function shouldSSR(url) {
 }
 
 async function registerApi(app) {
-  app.get('/api/catalog', async (request) =>
-    catalogPayload(searchParamsFromUrl(request.url)),
-  );
+  app.get('/api/catalog', async (request, reply) => {
+    const searchParams = searchParamsFromUrl(request.url);
+    reply.header('cache-control', cacheControlFor(searchParams));
+    return catalogPayload(searchParams);
+  });
 
-  app.get('/api/books/count', async (request) => {
-    const { total } = await catalogPayload(searchParamsFromUrl(request.url));
+  app.get('/api/books/count', async (request, reply) => {
+    const searchParams = searchParamsFromUrl(request.url);
+    const { total } = await catalogPayload(searchParams);
+    reply.header('cache-control', cacheControlFor(searchParams));
     return total;
   });
 
-  app.get('/api/books', async (request) => {
-    const { books } = await catalogPayload(searchParamsFromUrl(request.url));
+  app.get('/api/books', async (request, reply) => {
+    const searchParams = searchParamsFromUrl(request.url);
+    const { books } = await catalogPayload(searchParams);
+    reply.header('cache-control', cacheControlFor(searchParams));
     return books;
   });
 
   app.get('/api/books/:id', async (request, reply) => {
-    const book = await bookPayload(request.params.id);
+    const searchParams = searchParamsFromUrl(request.url);
+    const book = await bookPayload(request.params.id, searchParams);
     if (!book) return reply.code(404).send({ error: 'Book not found' });
+    reply.header('cache-control', cacheControlFor(searchParams));
     return book;
   });
 }
@@ -88,10 +97,21 @@ async function setupDev(app) {
       request.log.info({ url: request.url }, 'ssr:start');
       let template = await readFile(resolve(root, 'index.html'), 'utf8');
       template = await vite.transformIndexHtml(request.url, template);
-      const { html, rendered } = await renderHtml(emberApp, request.url, template);
+      const { html, rendered } = await renderHtml(
+        emberApp,
+        request.url,
+        template,
+      );
       request.log.info({ status: rendered.statusCode }, 'ssr:done');
       if (rendered.error) request.log.error(rendered.error);
-      return reply.code(rendered.statusCode).type('text/html').send(html);
+      return reply
+        .code(rendered.statusCode)
+        .type('text/html')
+        .header(
+          'cache-control',
+          cacheControlFor(searchParamsFromUrl(request.url)),
+        )
+        .send(html);
     } catch (error) {
       if (error instanceof Error) vite.ssrFixStacktrace(error);
       request.log.error(error);
@@ -114,7 +134,10 @@ async function setupProd(app) {
     wildcard: false,
   });
 
-  const template = await readFile(resolve(dist, 'server/template.html'), 'utf8');
+  const template = await readFile(
+    resolve(dist, 'server/template.html'),
+    'utf8',
+  );
   const emberApp = await createEmberApp(resolve(dist, 'server/app-ssr.js'), {
     workers: 1,
   });
@@ -125,9 +148,20 @@ async function setupProd(app) {
     if (!shouldSSR(request.url)) return;
 
     try {
-      const { html, rendered } = await renderHtml(emberApp, request.url, template);
+      const { html, rendered } = await renderHtml(
+        emberApp,
+        request.url,
+        template,
+      );
       if (rendered.error) request.log.error(rendered.error);
-      return reply.code(rendered.statusCode).type('text/html').send(html);
+      return reply
+        .code(rendered.statusCode)
+        .type('text/html')
+        .header(
+          'cache-control',
+          cacheControlFor(searchParamsFromUrl(request.url)),
+        )
+        .send(html);
     } catch (error) {
       request.log.error(error);
       return reply
