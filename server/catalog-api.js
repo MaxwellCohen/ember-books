@@ -32,11 +32,15 @@ export function cacheControlFor(searchParams) {
 
 export function cacheHeadersFor(searchParams) {
   const cacheControl = cacheControlFor(searchParams);
+  const netlifyControl =
+    cacheControl.includes('no-store') || cacheControl.includes('private')
+      ? cacheControl
+      : `${cacheControl}, durable`;
   return {
     'cache-control': cacheControl,
     'cdn-cache-control': cacheControl,
     'vercel-cdn-cache-control': cacheControl,
-    'netlify-cdn-cache-control': cacheControl,
+    'netlify-cdn-cache-control': netlifyControl,
   };
 }
 

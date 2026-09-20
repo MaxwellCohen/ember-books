@@ -12,5 +12,11 @@
   },
   "observability": {
     "enabled": true
-  }
+  },
+  "kv_namespaces": [
+    {
+      "binding": "CATALOG_CACHE",
+      "id": "aec2e5bb49284fbdbbfdc00b27d0f935"
+    }
+  ]
 }

@@ -4,8 +4,10 @@ import {
   catalogPayload,
   searchParamsFromUrl,
 } from '../server/catalog-api.js';
+import { bindCatalogCache } from '../server/catalog-cache.js';
 
 function applySecrets(env) {
+  bindCatalogCache(env?.CATALOG_CACHE);
   if (env?.POSTGRES_URL) process.env.POSTGRES_URL = env.POSTGRES_URL;
   if (env?.API_DELAY_MS) process.env.API_DELAY_MS = String(env.API_DELAY_MS);
 }
