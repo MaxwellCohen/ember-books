@@ -2,7 +2,10 @@
 export const CATALOG_CACHE_REVALIDATE_SECONDS = 3600;
 export const CATALOG_CACHE_EXPIRE_SECONDS = 86400;
 
-export const HTML_CACHE_CONTROL = `public, s-maxage=${CATALOG_CACHE_REVALIDATE_SECONDS}, stale-while-revalidate=${CATALOG_CACHE_EXPIRE_SECONDS}`;
+/** Match next-books HTML Cache-Control per host (Vercel vs Netlify/Cloudflare/local). */
+export const VERCEL_DOCUMENT_CACHE_CONTROL = 'public, max-age=0, must-revalidate';
+export const PRIVATE_DOCUMENT_CACHE_CONTROL =
+  'private, no-cache, no-store, max-age=0, must-revalidate';
 
 const TTL_MS = CATALOG_CACHE_REVALIDATE_SECONDS * 1000;
 
@@ -19,6 +22,11 @@ function isNetlify() {
     !envFlag('CLOUDFLARE') &&
     !envFlag('VERCEL')
   );
+}
+
+/** Public document Cache-Control matching next-books on this host. */
+export function hostDocumentCacheControl() {
+  return isVercel() ? VERCEL_DOCUMENT_CACHE_CONTROL : PRIVATE_DOCUMENT_CACHE_CONTROL;
 }
 
 function memoryGet(key) {
@@ -53,32 +61,6 @@ function envFlag(name) {
   } catch {
     return undefined;
   }
-}
-
-function delayFromRequest(request) {
-  try {
-    const delay = Number(new URL(request.url).searchParams.get('delay') ?? 0);
-    return Number.isFinite(delay) ? Math.max(0, delay) : 0;
-  } catch {
-    return 0;
-  }
-}
-
-function isCacheableHtmlRequest(request) {
-  return request.method === 'GET' && delayFromRequest(request) <= 0;
-}
-
-function withCacheControlHeaders(response, cacheControl) {
-  const headers = new Headers(response.headers);
-  headers.set('Cache-Control', cacheControl);
-  headers.set('CDN-Cache-Control', cacheControl);
-  headers.set('Vercel-CDN-Cache-Control', cacheControl);
-  headers.set('Netlify-CDN-Cache-Control', cacheControl);
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
 }
 
 async function platformGet(key) {
@@ -212,28 +194,4 @@ export async function cacheLifeHours(key, load) {
 
 export function withTtlCache(name, fn) {
   return (...args) => cacheLifeHours(`${name}:${JSON.stringify(args)}`, () => fn(...args));
-}
-
-export async function matchCachedHtml(request) {
-  if (!isCacheableHtmlRequest(request)) return;
-  const cache = edgeCache();
-  if (!cache) return;
-  try {
-    const hit = await cache.match(request);
-    return hit?.ok ? hit : undefined;
-  } catch {
-    return;
-  }
-}
-
-export async function storeCachedHtml(request, response) {
-  if (!isCacheableHtmlRequest(request) || !response.ok) return;
-  if (!response.headers.get('content-type')?.includes('text/html')) return;
-  const cache = edgeCache();
-  if (!cache) return;
-  try {
-    await cache.put(request, withCacheControlHeaders(response.clone(), HTML_CACHE_CONTROL));
-  } catch {
-    // Best-effort HTML edge cache.
-  }
 }

@@ -6,10 +6,7 @@ import {
   parseSearchParams,
 } from '../app/lib/url-state.js';
 import { getBookById, getBooksCount, getBooksPage } from './book-queries.js';
-import { HTML_CACHE_CONTROL } from './catalog-cache.js';
-
-export const PUBLIC_CACHE_CONTROL = HTML_CACHE_CONTROL;
-export const PRIVATE_CACHE_CONTROL = 'private, no-store';
+import { hostDocumentCacheControl } from './catalog-cache.js';
 
 export function searchParamsFromUrl(url) {
   const { searchParams } = new URL(url, 'http://ember-books.local');
@@ -24,23 +21,14 @@ export function effectiveApiDelayMs(searchParams) {
   return Math.min(MAX_API_DELAY_MS, Math.max(0, envMs));
 }
 
-export function cacheControlFor(searchParams) {
-  return effectiveApiDelayMs(searchParams) > 0
-    ? PRIVATE_CACHE_CONTROL
-    : PUBLIC_CACHE_CONTROL;
+/** Match next-books document Cache-Control (delay does not change headers). */
+export function cacheControlFor(_searchParams) {
+  return hostDocumentCacheControl();
 }
 
 export function cacheHeadersFor(searchParams) {
-  const cacheControl = cacheControlFor(searchParams);
-  const netlifyControl =
-    cacheControl.includes('no-store') || cacheControl.includes('private')
-      ? cacheControl
-      : `${cacheControl}, durable`;
   return {
-    'cache-control': cacheControl,
-    'cdn-cache-control': cacheControl,
-    'vercel-cdn-cache-control': cacheControl,
-    'netlify-cdn-cache-control': netlifyControl,
+    'cache-control': cacheControlFor(searchParams),
   };
 }
 

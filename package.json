@@ -30,9 +30,9 @@
     "start": "node server.js --dev",
     "preview": "node server.js",
     "test": "vite build --mode development && ember test --path dist/client",
-    "preview:cloudflare": "npm run build && cp dist/server/template.html dist/client/index.html && npx --yes wrangler@4.131.2 dev",
-    "deploy:cloudflare": "npm run build && cp dist/server/template.html dist/client/index.html && npx --yes wrangler@4.131.2 deploy",
-    "deploy:netlify": "npm run build && cp dist/server/template.html dist/client/index.html && npx --yes netlify deploy --prod --dir dist/client --functions netlify/functions --skip-functions-cache",
+    "preview:cloudflare": "npm run build && cp dist/server/template.html dist/client/index.html && cp public/_headers dist/client/_headers && npx --yes wrangler@4.131.2 dev",
+    "deploy:cloudflare": "npm run build && cp dist/server/template.html dist/client/index.html && cp public/_headers dist/client/_headers && npx --yes wrangler@4.131.2 deploy",
+    "deploy:netlify": "npm run build && cp dist/server/template.html dist/client/index.html && cp public/_headers dist/client/_headers && npx --yes netlify deploy --prod --dir dist/client --functions netlify/functions --skip-functions-cache",
     "deploy:vercel": "npx --yes vercel deploy --prod --yes"
   },
   "devDependencies": {

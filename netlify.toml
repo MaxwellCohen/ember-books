@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build && cp dist/server/template.html dist/client/index.html"
+  command = "npm run build && cp dist/server/template.html dist/client/index.html && cp public/_headers dist/client/_headers"
   publish = "dist/client"
 
 [build.environment]
@@ -19,3 +19,14 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Match next-books Netlify HTML Cache-Control (static SPA shell).
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "private, no-cache, no-store, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "private, no-cache, no-store, max-age=0, must-revalidate"

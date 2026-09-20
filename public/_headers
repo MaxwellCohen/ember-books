@@ -1,0 +1,6 @@
+# Match next-books Cloudflare HTML Cache-Control (static SPA shell).
+/
+  Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate

@@ -8,7 +8,6 @@ import {
   catalogPayload,
   searchParamsFromUrl,
 } from './catalog-api.js';
-import { matchCachedHtml, storeCachedHtml } from './catalog-cache.js';
 
 function jsonWithCache(body, searchParams, init = {}) {
   return Response.json(body, {
@@ -78,9 +77,6 @@ export async function handleFetch(request, options = {}) {
     return new Response('Not found', { status: 404 });
   }
 
-  const cachedHtml = await matchCachedHtml(request);
-  if (cachedHtml) return cachedHtml;
-
   const searchParams = searchParamsFromUrl(url.href);
   const [template, emberApp] = await Promise.all([
     getTemplate(),
@@ -90,15 +86,13 @@ export async function handleFetch(request, options = {}) {
     settledTimeout: 8000,
   });
   if (rendered.error) console.error(rendered.error);
-  const response = new Response(assembleHTML(template, rendered), {
+  return new Response(assembleHTML(template, rendered), {
     headers: {
       ...cacheHeadersFor(searchParams),
       'content-type': 'text/html; charset=utf-8',
     },
     status: rendered.statusCode,
   });
-  void storeCachedHtml(request, response);
-  return response;
 }
 
 export async function handleNodeRequest(req, res) {
