@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "ember-books",
+  "name": "ember-books-optimized",
   "main": "workers/index.mjs",
   "compatibility_date": "2026-09-16",
   "compatibility_flags": ["nodejs_compat"],
