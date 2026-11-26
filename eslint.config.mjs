@@ -30,7 +30,14 @@ const esmParserOptions = {
 };
 
 export default defineConfig([
-  globalIgnores(['dist/', 'coverage/', '!**/.*']),
+  globalIgnores([
+    'dist/',
+    'coverage/',
+    '!**/.*',
+    // Playwright specs are TypeScript and build output is generated.
+    'feature-tests/**/*.ts',
+    'feature-tests/.out/',
+  ]),
   js.configs.recommended,
   eslintConfigPrettier,
   ember.configs.base,
@@ -64,6 +71,20 @@ export default defineConfig([
     files: ['tests/**/*-test.{js,gjs}'],
     plugins: {
       qunit,
+    },
+  },
+  /**
+   * This app calls its own JSON API with fetch() and does not use a WarpDrive
+   * store, so the store.request() rule does not apply to these files.
+   */
+  {
+    files: [
+      'app/lib/book/load-catalog.js',
+      'app/routes/feature-tests/*.js',
+      'feature-tests/run.mjs',
+    ],
+    rules: {
+      'warp-drive/no-external-request-patterns': 'off',
     },
   },
   /**

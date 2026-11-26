@@ -74,7 +74,8 @@ function bookKey(id, searchParams) {
 
 export function prefetchBook(id, searchParams = {}) {
   const key = bookKey(id, searchParams);
-  if (!bookCache.has(key)) bookCache.set(key, loadBook(String(id), searchParams));
+  if (!bookCache.has(key))
+    bookCache.set(key, loadBook(String(id), searchParams));
   return bookCache.get(key);
 }
 

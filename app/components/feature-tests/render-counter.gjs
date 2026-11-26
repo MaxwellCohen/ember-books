@@ -22,7 +22,8 @@ export default class RenderCounter extends Component {
   <template>
     <div data-testid="render-counter" class="space-y-2">
       <p>Count: <span data-testid="count">{{this.count}}</span></p>
-      <p>Template renders: <span data-testid="renders">{{(this.markRender)}}</span></p>
+      <p>Template renders:
+        <span data-testid="renders">{{(this.markRender)}}</span></p>
       <button
         type="button"
         data-testid="increment"

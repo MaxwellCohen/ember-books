@@ -3,7 +3,8 @@ export const CATALOG_CACHE_REVALIDATE_SECONDS = 3600;
 export const CATALOG_CACHE_EXPIRE_SECONDS = 86400;
 
 /** Match next-books HTML Cache-Control per host (Vercel vs Netlify/Cloudflare/local). */
-export const VERCEL_DOCUMENT_CACHE_CONTROL = 'public, max-age=0, must-revalidate';
+export const VERCEL_DOCUMENT_CACHE_CONTROL =
+  'public, max-age=0, must-revalidate';
 export const PRIVATE_DOCUMENT_CACHE_CONTROL =
   'private, no-cache, no-store, max-age=0, must-revalidate';
 
@@ -26,7 +27,9 @@ function isNetlify() {
 
 /** Public document Cache-Control matching next-books on this host. */
 export function hostDocumentCacheControl() {
-  return isVercel() ? VERCEL_DOCUMENT_CACHE_CONTROL : PRIVATE_DOCUMENT_CACHE_CONTROL;
+  return isVercel()
+    ? VERCEL_DOCUMENT_CACHE_CONTROL
+    : PRIVATE_DOCUMENT_CACHE_CONTROL;
 }
 
 function memoryGet(key) {
@@ -138,10 +141,13 @@ async function platformSet(key, value) {
   try {
     if (isNetlify()) {
       const { getStore } = await import('@netlify/blobs');
-      await getStore({ name: 'catalog-cache', consistency: 'strong' }).setJSON(key, {
-        expiresAt: Date.now() + TTL_MS,
-        value,
-      });
+      await getStore({ name: 'catalog-cache', consistency: 'strong' }).setJSON(
+        key,
+        {
+          expiresAt: Date.now() + TTL_MS,
+          value,
+        },
+      );
       return;
     }
   } catch {
@@ -193,7 +199,8 @@ export async function cacheLifeHours(key, load) {
 }
 
 export function withTtlCache(name, fn) {
-  return (...args) => cacheLifeHours(`${name}:${JSON.stringify(args)}`, () => fn(...args));
+  return (...args) =>
+    cacheLifeHours(`${name}:${JSON.stringify(args)}`, () => fn(...args));
 }
 
 /** Drop one key from the in-process cache (on-demand revalidation). */

@@ -1,6 +1,12 @@
 import { expect, test } from '@playwright/test';
 import { execSync } from 'node:child_process';
-import { copyFileSync, existsSync, readFileSync, rmSync, statSync } from 'node:fs';
+import {
+  copyFileSync,
+  existsSync,
+  readFileSync,
+  rmSync,
+  statSync,
+} from 'node:fs';
 import { evidence } from './helpers';
 
 const run = (cmd: string) => execSync(cmd, { stdio: 'inherit' });
@@ -18,7 +24,9 @@ test('builds for Node, Cloudflare Workers and Netlify Functions', async () => {
 
   // Cloudflare Workers: wrangler bundles workers/index.mjs without deploying.
   rmSync('feature-tests/.out/cloudflare', { recursive: true, force: true });
-  run('npx --yes wrangler@4.131.2 deploy --dry-run --outdir feature-tests/.out/cloudflare');
+  run(
+    'npx --yes wrangler@4.131.2 deploy --dry-run --outdir feature-tests/.out/cloudflare',
+  );
   const worker = 'feature-tests/.out/cloudflare/index.js';
   expect(existsSync(worker)).toBe(true);
   expect(readFileSync(worker, 'utf8')).toContain('/api/catalog');

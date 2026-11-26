@@ -7,7 +7,5 @@
     }
   },
   "outputDirectory": "dist/client",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/api" }
-  ]
+  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
 }

@@ -1,13 +1,18 @@
 import { expect, test } from '@playwright/test';
 import { evidence } from './helpers';
 
-test('hovering a book link fetches its data before the click', async ({ page }) => {
+test('hovering a book link fetches its data before the click', async ({
+  page,
+}) => {
   const log: { url: string; t: number }[] = [];
   page.on('request', (r) => {
-    if (new URL(r.url()).pathname.startsWith('/api/books/')) log.push({ url: r.url(), t: Date.now() });
+    if (new URL(r.url()).pathname.startsWith('/api/books/'))
+      log.push({ url: r.url(), t: Date.now() });
   });
   await page.goto('/feature-tests/route-prefetching');
-  await page.waitForFunction(() => document.documentElement.innerHTML.includes('data-book-id'));
+  await page.waitForFunction(() =>
+    document.documentElement.innerHTML.includes('data-book-id'),
+  );
   // Wait for the app to boot (rehydration attaches modifiers).
   await page.waitForLoadState('networkidle');
 
@@ -26,5 +31,7 @@ test('hovering a book link fetches its data before the click', async ({ page }) 
   await page.waitForLoadState('networkidle');
   expect(hoveredAt).toBeLessThan(clickAt);
   expect(log.length, 'model hook reused the prefetched promise').toBe(1);
-  evidence(`hover fired GET /api/books/${id} ${clickAt - hoveredAt}ms before click; no second request after navigation (${log.length} total)`);
+  evidence(
+    `hover fired GET /api/books/${id} ${clickAt - hoveredAt}ms before click; no second request after navigation (${log.length} total)`,
+  );
 });

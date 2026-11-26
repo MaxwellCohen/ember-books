@@ -15,7 +15,8 @@ const FEATURES = [
 
 <template>
   <h1 class="text-2xl font-semibold">Feature tests</h1>
-  <p>One page per performance feature, validated by the specs in <code>feature-tests/</code>.</p>
+  <p>One page per performance feature, validated by the specs in
+    <code>feature-tests/</code>.</p>
   <ul class="list-disc pl-6">
     {{#each FEATURES as |f|}}
       <li><LinkTo @route={{f.route}}>{{f.id}}</LinkTo></li>

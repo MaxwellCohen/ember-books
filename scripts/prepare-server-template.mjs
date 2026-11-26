@@ -10,10 +10,15 @@ const islandsTemplate = resolve(root, 'dist/server/islands-template.html');
 let html = await readFile(clientIndex, 'utf8');
 
 // Feature test css-inlining (hand-rolled): swap the built stylesheet <link> for a <style>.
-const link = html.match(/<link[^>]+rel="stylesheet"[^>]+href="(\/assets\/[^"]+\.css)"[^>]*>/);
+const link = html.match(
+  /<link[^>]+rel="stylesheet"[^>]+href="(\/assets\/[^"]+\.css)"[^>]*>/,
+);
 if (link) {
   const css = await readFile(resolve(clientDir, link[1].slice(1)), 'utf8');
-  html = html.replace(link[0], () => `<style data-inlined="${link[1]}">${css}</style>`);
+  html = html.replace(
+    link[0],
+    () => `<style data-inlined="${link[1]}">${css}</style>`,
+  );
 }
 
 // Feature test font-optimization: Fontsource self-hosts the files; preload the latin

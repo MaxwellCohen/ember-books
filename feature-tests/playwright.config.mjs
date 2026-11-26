@@ -13,7 +13,8 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${PORT}`,
     launchOptions: {
-      executablePath: process.env.CHROME_PATH || '/home/maxc/.local/bin/google-chrome',
+      executablePath:
+        process.env.CHROME_PATH || '/home/maxc/.local/bin/google-chrome',
     },
   },
   projects: [

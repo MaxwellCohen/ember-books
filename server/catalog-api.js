@@ -22,7 +22,7 @@ export function effectiveApiDelayMs(searchParams) {
 }
 
 /** Match next-books document Cache-Control (delay does not change headers). */
-export function cacheControlFor(_searchParams) {
+export function cacheControlFor() {
   return hostDocumentCacheControl();
 }
 

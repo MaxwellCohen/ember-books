@@ -60,4 +60,3 @@ npm run deploy:cloudflare
 ```
 
 Set `POSTGRES_URL` (and optionally `API_DELAY_MS`) on each host. Cloudflare uses `wrangler secret put POSTGRES_URL`.
-

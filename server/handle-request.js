@@ -60,10 +60,15 @@ export async function handleFetch(request, options = {}) {
   const ssr = options.ssr !== false;
 
   if (url.pathname === '/api/feature-tests/cached-time') {
-    return Response.json(await cachedTimestamp(), { headers: CACHED_TIME_HEADERS });
+    return Response.json(await cachedTimestamp(), {
+      headers: CACHED_TIME_HEADERS,
+    });
   }
 
-  if (url.pathname === '/api/feature-tests/revalidate' && request.method === 'POST') {
+  if (
+    url.pathname === '/api/feature-tests/revalidate' &&
+    request.method === 'POST'
+  ) {
     revalidateTimestamp();
     return Response.json({ revalidated: true });
   }

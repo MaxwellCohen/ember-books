@@ -16,7 +16,8 @@ export function revalidateTimestamp() {
 }
 
 export const CACHED_TIME_HEADERS = {
-  'cache-control': 'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
+  'cache-control':
+    'public, max-age=0, s-maxage=3600, stale-while-revalidate=86400',
 };
 
 /** Render modes: paths served as the unrendered SPA shell (client-only). */

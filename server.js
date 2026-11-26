@@ -214,6 +214,7 @@ for (const signal of ['SIGINT', 'SIGTERM']) {
   process.on(signal, async () => {
     await emberApp.destroy();
     await app.close();
+    // eslint-disable-next-line n/no-process-exit -- shutdown handler: exit once the app and server are closed
     process.exit(0);
   });
 }
