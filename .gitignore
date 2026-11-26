@@ -26,3 +26,4 @@
 .postgres-url
 !.env.sample
 !.env.development
+/feature-tests/.out/

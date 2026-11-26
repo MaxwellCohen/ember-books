@@ -226,3 +226,10 @@ input[type="range"]::-moz-range-thumb {
     animation: none !important;
   }
 }
+
+/* Feature tests: marker rule proving the route's CSS is inlined into the HTML. */
+.ft-css-inlining-marker {
+  --ft-css-inlining: inlined;
+  border-left: 4px solid #2563eb;
+  padding-left: 0.75rem;
+}

@@ -8,6 +8,13 @@ import {
   catalogPayload,
   searchParamsFromUrl,
 } from './catalog-api.js';
+import {
+  CACHED_TIME_HEADERS,
+  cachedTimestamp,
+  isClientOnly,
+  isIslandsPage,
+  revalidateTimestamp,
+} from './feature-tests.js';
 
 function jsonWithCache(body, searchParams, init = {}) {
   return Response.json(body, {
@@ -22,6 +29,15 @@ function jsonWithCache(body, searchParams, init = {}) {
 const root = fileURLToPath(new URL('..', import.meta.url));
 
 let templatePromise;
+let islandsTemplatePromise;
+
+function getIslandsTemplate() {
+  islandsTemplatePromise ??= readFile(
+    resolve(root, 'dist/server/islands-template.html'),
+    'utf8',
+  );
+  return islandsTemplatePromise;
+}
 let emberAppPromise;
 
 function getTemplate() {
@@ -42,6 +58,15 @@ function getEmberApp() {
 export async function handleFetch(request, options = {}) {
   const url = new URL(request.url);
   const ssr = options.ssr !== false;
+
+  if (url.pathname === '/api/feature-tests/cached-time') {
+    return Response.json(await cachedTimestamp(), { headers: CACHED_TIME_HEADERS });
+  }
+
+  if (url.pathname === '/api/feature-tests/revalidate' && request.method === 'POST') {
+    revalidateTimestamp();
+    return Response.json({ revalidated: true });
+  }
 
   if (url.pathname === '/api/catalog') {
     const searchParams = searchParamsFromUrl(url.href);
@@ -78,8 +103,16 @@ export async function handleFetch(request, options = {}) {
   }
 
   const searchParams = searchParamsFromUrl(url.href);
+  if (isClientOnly(url.pathname)) {
+    return new Response(await getTemplate(), {
+      headers: {
+        ...cacheHeadersFor(searchParams),
+        'content-type': 'text/html; charset=utf-8',
+      },
+    });
+  }
   const [template, emberApp] = await Promise.all([
-    getTemplate(),
+    isIslandsPage(url.pathname) ? getIslandsTemplate() : getTemplate(),
     getEmberApp(),
   ]);
   const rendered = await emberApp.renderRoute(`${url.pathname}${url.search}`, {

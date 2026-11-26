@@ -195,3 +195,9 @@ export async function cacheLifeHours(key, load) {
 export function withTtlCache(name, fn) {
   return (...args) => cacheLifeHours(`${name}:${JSON.stringify(args)}`, () => fn(...args));
 }
+
+/** Drop one key from the in-process cache (on-demand revalidation). */
+export function revalidateCacheKey(key) {
+  memory.delete(key);
+  inflight.delete(key);
+}
