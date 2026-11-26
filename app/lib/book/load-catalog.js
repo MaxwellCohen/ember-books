@@ -63,3 +63,26 @@ export async function loadBook(id, searchParams) {
     searchParams,
   };
 }
+
+// Feature test route-prefetching (hand-rolled): warm the book request on
+// hover/focus and hand the same promise to the route's model hook.
+const bookCache = new Map();
+
+function bookKey(id, searchParams) {
+  return `${id}?${stringifySearchParams(searchParams ?? {})}`;
+}
+
+export function prefetchBook(id, searchParams = {}) {
+  const key = bookKey(id, searchParams);
+  if (!bookCache.has(key))
+    bookCache.set(key, loadBook(String(id), searchParams));
+  return bookCache.get(key);
+}
+
+/** Returns (and forgets) a prefetched book promise so later visits stay fresh. */
+export function takePrefetchedBook(id, searchParams = {}) {
+  const key = bookKey(id, searchParams);
+  const pending = bookCache.get(key);
+  bookCache.delete(key);
+  return pending;
+}

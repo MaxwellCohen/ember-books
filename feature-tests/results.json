@@ -1,0 +1,85 @@
+{
+  "framework": "ember",
+  "repo": "ember-books",
+  "commit": "70c0e30378b478162775a0b62282a32b1ac87bd0",
+  "ranAt": "2026-11-26T15:11:59.781Z",
+  "results": {
+    "css-inlining": {
+      "claimedLabel": "manual",
+      "status": "pass",
+      "method": "scripts/prepare-server-template.mjs swaps the built stylesheet <link> for an inline <style> in the server template",
+      "evidence": "HTML has <style> (37534 bytes) with .ft-css-inlining-marker; 0 <link rel=stylesheet>; 0 CSS requests; rule applied (border-left 4px)",
+      "test": "feature-tests/css-inlining.spec.ts"
+    },
+    "font-optimization": {
+      "claimedLabel": "third-party",
+      "status": "pass",
+      "method": "@fontsource-variable/geist (@import in app.css) + build-script <link rel=preload as=font> for the latin subset",
+      "evidence": "preload /assets/geist-latin-wght-normal-BgDaEnEv.woff2; 5 Geist @font-face with font-display:swap; 1 font requests, all same-origin; no Google Fonts",
+      "test": "feature-tests/font-optimization.spec.ts"
+    },
+    "image-pipeline": {
+      "claimedLabel": "third-party",
+      "status": "pass",
+      "method": "@responsive-image/vite-plugin (?responsive import, AVIF/WebP/JPEG at 640/1080/1920w) + <ResponsiveImage> from @responsive-image/ember",
+      "evidence": "<picture> sources image/avif/image/webp/image/jpeg with widths 640,1080,1920w; img 3840x2400 loading=lazy, 0 requests for it until scrolled; /assets/feature-offscreen-640w-DmQo8GOs.avif -> image/avif",
+      "test": "feature-tests/image-pipeline.spec.ts"
+    },
+    "caching": {
+      "claimedLabel": "manual",
+      "status": "pass",
+      "method": "hand-rolled TTL cache in server/catalog-cache.js (cacheLifeHours + new revalidateCacheKey) behind /api/feature-tests/cached-time and the SSR route model",
+      "evidence": "API value upzujovt0pm identical on 2nd request; SSR page value stable (iebxbqids4); after revalidate new value xlcisi3pnqc, then cached again; Cache-Control \"public, max-age=0, s-maxage=3600, stale-while-revalidate=86400\"",
+      "test": "feature-tests/caching.spec.ts"
+    },
+    "route-prefetching": {
+      "claimedLabel": "manual",
+      "status": "pass",
+      "method": "ember-modifier prefetch-book on <LinkTo> warms loadBook() on pointerenter/focus; book route model takes the cached promise",
+      "evidence": "hover fired GET /api/books/5333265 305ms before click; no second request after navigation (1 total)",
+      "test": "feature-tests/route-prefetching.spec.ts"
+    },
+    "islands": {
+      "claimedLabel": "manual",
+      "status": "pass",
+      "method": "server swaps app/entry.js for app/islands.js on /feature-tests/islands; renderComponent (@ember/renderer, RFC 1099) mounts the island",
+      "evidence": "island toggled Save→Saved via renderComponent; 3 JS files (177037 B) loaded, none contain the static marker; main app bundle (/assets/main-C6uCYHCW.js) not loaded",
+      "test": "feature-tests/islands.spec.ts"
+    },
+    "render-modes": {
+      "claimedLabel": "manual",
+      "status": "pass",
+      "method": "per-path choice in server.js/handle-request.js: SSR (vite-ember-ssr) per request vs SPA shell for /feature-tests/render-modes/client",
+      "evidence": "/render-modes/server SSR timestamps differ per request (2026-11-26T15:11:57.730Z vs 2026-11-26T15:11:57.779Z); /render-modes/client HTML is the empty shell and renders data-mode=client in the browser",
+      "test": "feature-tests/render-modes.spec.ts"
+    },
+    "reactivity": {
+      "claimedLabel": "first-party",
+      "status": "pass",
+      "method": "@tracked (@glimmer/tracking) autotracking in a Glimmer component",
+      "evidence": "3 clicks: count text 0→3 in the same DOM node; render counter stayed at 1 (template helper not re-run)",
+      "test": "feature-tests/reactivity.spec.ts"
+    },
+    "bundle-analysis": {
+      "claimedLabel": "third-party",
+      "status": "pass",
+      "method": "npx vite-bundle-visualizer (community CLI over rollup-plugin-visualizer)",
+      "evidence": "stats.html 306772 B and stats.json with 288 modules generated",
+      "test": "feature-tests/bundle-analysis.spec.ts"
+    },
+    "third-party-scripts": {
+      "claimedLabel": "manual",
+      "status": "pass",
+      "method": "ember-modifier injects an async <script> after window load + requestIdleCallback",
+      "evidence": "no <script src> for it in server HTML; requested 11ms after loadEventEnd; global set with document.readyState=complete",
+      "test": "feature-tests/third-party-scripts.spec.ts"
+    },
+    "multi-host-deployment": {
+      "claimedLabel": "manual",
+      "status": "pass",
+      "method": "hand-written host entries: Node server.js, Cloudflare workers/index.mjs (wrangler --dry-run), Netlify functions (zip-it-and-ship-it)",
+      "evidence": "node: dist/server/app-ssr.js + template.html; cloudflare: wrangler --dry-run worker 551478 B; netlify: api.zip 5240316 B + dist/client/index.html shell",
+      "test": "feature-tests/multi-host-deployment.spec.ts"
+    }
+  }
+}

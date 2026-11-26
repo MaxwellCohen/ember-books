@@ -10,6 +10,13 @@ import {
   catalogPayload,
   searchParamsFromUrl,
 } from './server/catalog-api.js';
+import {
+  CACHED_TIME_HEADERS,
+  cachedTimestamp,
+  isClientOnly,
+  isIslandsPage,
+  revalidateTimestamp,
+} from './server/feature-tests.js';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
 const isDev = process.argv.includes('--dev');
@@ -33,6 +40,16 @@ function shouldSSR(url) {
 }
 
 async function registerApi(app) {
+  app.get('/api/feature-tests/cached-time', async (request, reply) => {
+    reply.headers(CACHED_TIME_HEADERS);
+    return cachedTimestamp();
+  });
+
+  app.post('/api/feature-tests/revalidate', async () => {
+    revalidateTimestamp();
+    return { revalidated: true };
+  });
+
   app.get('/api/catalog', async (request, reply) => {
     const searchParams = searchParamsFromUrl(request.url);
     reply.header('cache-control', cacheControlFor(searchParams));
@@ -138,6 +155,10 @@ async function setupProd(app) {
     resolve(dist, 'server/template.html'),
     'utf8',
   );
+  const islandsTemplate = await readFile(
+    resolve(dist, 'server/islands-template.html'),
+    'utf8',
+  );
   const emberApp = await createEmberApp(resolve(dist, 'server/app-ssr.js'), {
     workers: 1,
   });
@@ -147,11 +168,20 @@ async function setupProd(app) {
   app.get('*', async (request, reply) => {
     if (!shouldSSR(request.url)) return;
 
+    const pathname = request.url.split('?')[0];
+    if (isClientOnly(pathname)) {
+      // Render mode "client": unrendered SPA shell, app/entry.js boots in the browser.
+      return reply
+        .type('text/html')
+        .header('cache-control', cacheControlFor({}))
+        .send(template);
+    }
+
     try {
       const { html, rendered } = await renderHtml(
         emberApp,
         request.url,
-        template,
+        isIslandsPage(pathname) ? islandsTemplate : template,
       );
       if (rendered.error) request.log.error(rendered.error);
       return reply
@@ -184,6 +214,7 @@ for (const signal of ['SIGINT', 'SIGTERM']) {
   process.on(signal, async () => {
     await emberApp.destroy();
     await app.close();
+    // eslint-disable-next-line n/no-process-exit -- shutdown handler: exit once the app and server are closed
     process.exit(0);
   });
 }

@@ -42,7 +42,9 @@ export const books = pgTable(
     title_tsv: text('title_tsv').notNull(),
   },
   (table) => ({
-    averageRatingIdx: index('idx_books_average_rating').on(table.average_rating),
+    averageRatingIdx: index('idx_books_average_rating').on(
+      table.average_rating,
+    ),
     coveringIdx: index('idx_books_id_title_image_url_thumbhash').on(
       table.id,
       table.title,

@@ -1,4 +1,4 @@
-export default function (environment) {
+export default function config(environment) {
   const ENV = {
     modulePrefix: 'ember-books',
     environment,
@@ -21,3 +21,8 @@ export default function (environment) {
 
   return ENV;
 }
+
+// ember-cli loads this file with require(). Node returns the module namespace
+// for a plain ESM file, which is not callable. This export name makes require()
+// return the function itself (Node 22.10+).
+export { config as 'module.exports' };

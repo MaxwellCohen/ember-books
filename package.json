@@ -29,11 +29,12 @@
     "lint:js:fix": "eslint . --fix",
     "start": "node server.js --dev",
     "preview": "node server.js",
-    "test": "vite build --mode development && ember test --path dist/client",
+    "test": "NODE_ENV=development vite build --mode test && ember test --path dist/client",
     "preview:cloudflare": "npm run build && cp dist/server/template.html dist/client/index.html && cp public/_headers dist/client/_headers && npx --yes wrangler@4.131.2 dev",
     "deploy:cloudflare": "npm run build && cp dist/server/template.html dist/client/index.html && cp public/_headers dist/client/_headers && npx --yes wrangler@4.131.2 deploy",
     "deploy:netlify": "npm run build && cp dist/server/template.html dist/client/index.html && cp public/_headers dist/client/_headers && npx --yes netlify deploy --prod --dir dist/client --functions netlify/functions --skip-functions-cache",
-    "deploy:vercel": "npx --yes vercel deploy --prod --yes"
+    "deploy:vercel": "npx --yes vercel deploy --prod --yes",
+    "test:features": "node feature-tests/run.mjs"
   },
   "devDependencies": {
     "@babel/core": "^7.29.7",
@@ -53,6 +54,9 @@
     "@embroider/vite": "^1.7.9",
     "@eslint/js": "^9.39.5",
     "@glimmer/component": "^2.1.1",
+    "@playwright/test": "^1.65.1",
+    "@responsive-image/ember": "^3.1.1",
+    "@responsive-image/vite-plugin": "^3.0.1",
     "@rollup/plugin-babel": "^7.1.0",
     "@warp-drive/core": "~5.8.2",
     "@warp-drive/ember": "~5.8.2",
@@ -87,7 +91,8 @@
     "stylelint": "^17.14.1",
     "stylelint-config-standard": "^40.0.0",
     "testem": "^3.20.1",
-    "vite": "^8.2.1"
+    "vite": "^8.2.1",
+    "vite-bundle-visualizer": "^1.2.1"
   },
   "engines": {
     "node": ">= 22"
