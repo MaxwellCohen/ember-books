@@ -1,7 +1,7 @@
 {
   "framework": "ember",
   "repo": "ember-books",
-  "commit": "e53cee56e1031057b38a434c99b3b5b318c057b6",
+  "commit": "89e6ba17095210cbc0f58bf7e813f08b86f62c3e",
   "ranAt": "2026-11-26T05:02:19.513Z",
   "results": {
     "css-inlining": {
@@ -43,7 +43,7 @@
       "claimedLabel": "manual",
       "status": "pass",
       "method": "server swaps app/entry.js for app/islands.js on /feature-tests/islands; renderComponent (@ember/renderer, RFC 1099) mounts the island",
-      "evidence": "island toggled Save→Saved via renderComponent; 3 JS files (177037 B) loaded, none contain the static marker; main app bundle (/assets/main-DSHTpKWM.js) not loaded",
+      "evidence": "island toggled Save\u2192Saved via renderComponent; 3 JS files (177037 B) loaded, none contain the static marker; main app bundle (/assets/main-DSHTpKWM.js) not loaded",
       "test": "feature-tests/islands.spec.ts"
     },
     "render-modes": {
@@ -57,7 +57,7 @@
       "claimedLabel": "first-party",
       "status": "pass",
       "method": "@tracked (@glimmer/tracking) autotracking in a Glimmer component",
-      "evidence": "3 clicks: count text 0→3 in the same DOM node; render counter stayed at 1 (template helper not re-run)",
+      "evidence": "3 clicks: count text 0\u21923 in the same DOM node; render counter stayed at 1 (template helper not re-run)",
       "test": "feature-tests/reactivity.spec.ts"
     },
     "bundle-analysis": {
