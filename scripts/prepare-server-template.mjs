@@ -36,12 +36,12 @@ await mkdir(resolve(root, 'dist/server'), { recursive: true });
 await writeFile(serverTemplate, html);
 
 // Feature test islands (hand-rolled): same template, but boot app/islands.js
-// instead of the full app entry.
+// instead of the full app entry. Newer builds write crossorigin="", older ones a bare crossorigin.
 const manifestPath = resolve(clientDir, '.vite/manifest.json');
 const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
 const islands = manifest['app/islands.js'];
 const islandsHtml = html.replace(
-  /<script type="module" crossorigin src="\/assets\/main-[^"]+\.js"><\/script>/,
+  /<script type="module" crossorigin(?:="")? src="\/assets\/main-[^"]+\.js"><\/script>/,
   `<script type="module" crossorigin src="/${islands.file}"></script>`,
 );
 await writeFile(islandsTemplate, islandsHtml);
