@@ -4,3 +4,7 @@
 
 /index.html
   Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate
+
+# Vite writes content-hashed files to /assets, so they never change.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
