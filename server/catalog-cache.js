@@ -41,13 +41,6 @@ function memorySet(key, value) {
   memory.set(key, { expiresAt: Date.now() + TTL_MS, value });
 }
 
-let catalogKv;
-
-/** Bind Workers KV so catalog queries persist across isolates (like Next `use cache`). */
-export function bindCatalogCache(kv) {
-  if (kv) catalogKv = kv;
-}
-
 function edgeRequest(key) {
   return new Request(
     `https://example.com/books-catalog-cache/v1/${encodeURIComponent(key)}`,
@@ -67,16 +60,6 @@ function envFlag(name) {
 }
 
 async function platformGet(key) {
-  try {
-    if (catalogKv) {
-      const value = await catalogKv.get(key, 'json');
-      if (value != null) return value;
-      return;
-    }
-  } catch {
-    // KV optional / not bound.
-  }
-
   try {
     if (isVercel()) {
       const { getCache } = await import('@vercel/functions');
@@ -114,17 +97,6 @@ async function platformGet(key) {
 }
 
 async function platformSet(key, value) {
-  try {
-    if (catalogKv) {
-      await catalogKv.put(key, JSON.stringify(value), {
-        expirationTtl: CATALOG_CACHE_REVALIDATE_SECONDS,
-      });
-      return;
-    }
-  } catch {
-    // KV optional / not bound.
-  }
-
   try {
     if (isVercel()) {
       const { getCache } = await import('@vercel/functions');
